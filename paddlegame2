@@ -1,0 +1,149 @@
+var puck = {
+  x: 200,
+  y: 200,
+  xSpeed: 2,
+  ySpeed: -2,
+  r: 15
+};
+
+var edgeOffset = 20;
+
+var player1 = {
+  x: edgeOffset,
+  y: 200,
+  ht: 100,
+  wd: 10
+  
+};
+
+var player2 = {
+  x: 400-edgeOffset,
+  y: 200,
+  ht: 100,
+  wd: 10
+};
+
+var a =0;
+var b =0;
+
+var mySound1;
+var mySound2;
+
+function preload(){
+mySound1 = loadSound('win.mp3');
+mySound2 = loadSound('loss.mp3');  
+}
+  
+
+function setup() {
+  createCanvas(400, 400);
+}
+
+function draw() {
+  
+  
+  background("Yellow");
+  
+  // place the Score
+  textAlign(CENTER);
+  fill (100);
+  text(' Player 1 \n Score \n ' +b , 140, 50);
+  text(' Player 2 \n Score \n ' +a , 260, 50);
+  
+  // draw puck
+  fill ("red");
+  ellipse(puck.x, puck.y, puck.r*3);
+  
+  // move puck
+  if (puck.y < puck.r || puck.y > height - puck.r) {
+    puck.ySpeed = -puck.ySpeed;
+  }
+  
+  puck.x += puck.xSpeed;
+  puck.y += puck.ySpeed;
+  
+  fill ("blue");
+  // draw paddles
+  rect(player1.x, player1.y, player1.wd, player1.ht);
+  rect(player2.x-player2.wd, player2.y, player2.wd, player2.ht);
+  
+  // paddle movement
+  if (player1.paddleDown && ! player1.paddleUp) {
+    player1.y += 5;
+  }
+  if (player1.paddleUp && ! player1.paddleDown) {
+    player1.y -= 5;
+  } 
+
+  if (player2.paddleDown && ! player2.paddleUp) {
+    player2.y += 5;
+  }
+  if (player2.paddleUp && ! player2.paddleDown) {
+    player2.y -= 5;
+  }
+  
+  // don't let paddles outside of the play area
+  player1.y = constrain(player1.y, 10, height-player1.ht-10);
+  player2.y = constrain(player2.y, 10, height-player2.ht-10);
+  
+  // bounce puck on paddles -- player 1 -- based on x-coordinate
+  if (puck.x - puck.r < player1.x + player1.wd) {
+    a=a+1;
+    mySound1.play();
+    
+    // check if puck is within paddle height...
+    if (puck.y > player1.y && puck.y < player1.y + player1.ht) {
+      puck.xSpeed = abs(puck.xSpeed);
+      
+    } else {  
+    mySound2.play();
+    }
+    
+  }
+  
+  // bounce puck on paddles -- player 2 -- based on x-coordinate
+  if (puck.x + puck.r > player2.x - player2.wd) {
+    b=b+1;
+    //mySound1.setVolume(0.1);
+    mySound1.play();
+    
+    // check if puck is within paddle height...
+    
+    if (puck.y > player2.y && puck.y < player2.y + player2.ht) {
+      puck.xSpeed = -abs(puck.xSpeed);
+    
+    } else {  
+    mySound2.play();
+    }
+  }
+}
+
+// keyboard input
+function keyPressed() {
+  print(key);
+  if (key == 'A') {
+    player1.paddleDown = true;
+  } else if (key == 'Q') {
+    player1.paddleUp = true;
+  }
+  
+  if (keyCode == DOWN_ARROW) {
+    player2.paddleDown = true;
+  } else if (keyCode == UP_ARROW) {
+    player2.paddleUp = true;
+  }
+}
+
+function keyReleased() {
+  if (key == 'A') {
+    player1.paddleDown = false;
+  } else if (key == 'Q') {
+    player1.paddleUp = false;
+  }
+  
+  if (keyCode == DOWN_ARROW) {
+    player2.paddleDown = false;
+  } else if (keyCode == UP_ARROW) {
+    player2.paddleUp = false;
+  }
+}
